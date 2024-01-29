@@ -1,8 +1,8 @@
-// Create Multiple classes
-
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
+
+// Create Multiple classes
 
 // Student:
 // Properties: studentId, name, email, contactNumber
@@ -476,15 +476,43 @@ class Question {
     public void setAssignmentId(int assignmentId) {
         this.assignmentId = assignmentId;
     }
+
 }
 
+// Answer:
+// answerId, content, answerkey
+// assignmentid
 class Answer {
     private int answerId;
-    private String answerText;
+    private String content;
+
+    public Answer(int answerId, String content) {
+        this.answerId = answerId;
+        this.content = content;
+    }
+
+    // Getters and setters
+    public int getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(int answerId) {
+        this.answerId = answerId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }
 
 public class App {
     public static void main(String[] args) throws Exception {
+
         // Create 10 students Objects
         List<Student> student = new ArrayList<>();
         student.add(new Student(1, "Sarah", "sarah@google.com", 1234567890L));
@@ -497,6 +525,7 @@ public class App {
         student.add(new Student(8, "Ethan", "ethan@google.com", 8901234567L));
         student.add(new Student(9, "Ava", "ava@google.com", 9012345678L));
         student.add(new Student(10, "Noah", "noah@google.com", 1234567890L));
+
         // Create 5 tech stacks
         // TechStack:
         // Properties: techStackId, name, description
@@ -514,16 +543,24 @@ public class App {
         tariner.add(new Trainer(2, "Krishna", "krishna.t@brudite.com", 9028238962L, techStack));
         tariner.add(new Trainer(3, "Rishabh", "rishabh.t@brudite.com", 9229258962L, techStack));
 
+        List<Answer> answers = new ArrayList<>();
+        answers.add(new Answer(1, null));
+        answers.add(new Answer(2, null));
+        answers.add(new Answer(3, null));
+        answers.add(new Answer(4, null));
+        answers.add(new Answer(4, null));
+
         // Create 4 questions in each assignment
+        List<Question> question = new ArrayList<>();
         // Question:
         // QuestionId, List<Answer>, answerkey, score of Question,
         // techstackid,assignmentid
-        List<Question> question = new ArrayList<>();
+
         // Questions for Assignment-1
         question.add(new Question(1, null, 0, 10, 1, 1));
         question.add(new Question(2, null, 0, 10, 2, 1));
         question.add(new Question(3, null, 0, 10, 4, 1));
-        question.add(new Question(4, null, 0, 10, 1, 1));
+        question.add(new Question(4, null, 0, 10, 5, 1));
 
         // Questions for Assignment-2
         question.add(new Question(1, null, 0, 10, 2, 2));
@@ -532,24 +569,31 @@ public class App {
         question.add(new Question(4, null, 0, 10, 4, 2));
 
         // Questions for Assignment-3
-        question.add(new Question(1, null, 0, 10, 2, 3));
+        question.add(new Question(1, null, 0, 10, 5, 3));
         question.add(new Question(2, null, 0, 10, 3, 3));
         question.add(new Question(3, null, 0, 10, 2, 3));
         question.add(new Question(4, null, 0, 10, 1, 3));
 
         // Questions for Assignment-4
-        question.add(new Question(1, null, 0, 10, 2, 4));
+        question.add(new Question(1, null, 0, 10, 3, 4));
         question.add(new Question(2, null, 0, 10, 4, 4));
         question.add(new Question(3, null, 0, 10, 2, 4));
         question.add(new Question(4, null, 0, 10, 3, 4));
 
         // Create 4 Assignments
+        List<Assignment> assignments = new ArrayList<>();
         // Assignment:
         // Properties: assignmentId, title, description, dueDate, List<Question>
-        List<Assignment> assignment = new ArrayList<>();
-        assignment.add(new Assignment(1, "Data Types", null, "05/01/2024", question.subList(0, 3)));
-        assignment.add(new Assignment(1, "OOPS", null, "15/01/2024", question.subList(4, 7)));
-        assignment.add(new Assignment(1, "Caching", null, "25/01/2024", question.subList(8, 11)));
-        assignment.add(new Assignment(1, "Development Strategies", null, "1/02/2024", question.subList(12, 15)));
+
+        assignments.add(new Assignment(1, "Data Types", "Study data types in programming languages", "05/01/2024",
+                question.subList(0, 3)));
+        assignments.add(new Assignment(2, "OOPS", "Explore Object-Oriented Programming concepts", "15/01/2024",
+                question.subList(4, 7)));
+        assignments.add(new Assignment(3, "Caching", "Learn about caching mechanisms in software development",
+                "25/01/2024", question.subList(8, 11)));
+        assignments.add(new Assignment(4, "Development Strategies",
+                "Understand different development strategies and methodologies", "1/02/2024",
+                question.subList(12, 15)));
+
     }
 }
