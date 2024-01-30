@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Random;
+import java.util.Iterator;
 
 // Create Multiple classes
 
@@ -399,6 +400,7 @@ class Result {
         int count = 0;
         List<String> name_stack = new ArrayList<>();
         Map<String, Integer> map = new HashMap<>();
+
         for (Result result : results) {
             String name = result.getStudent().getName();
             String assign_title = result.getAssignment().getTitle();
@@ -437,37 +439,78 @@ class Result {
         return map;
     }
 
-    static void highest_performing(Map<String, Integer> hash_map) {
+    static Map<String, Integer> sorted_map(Map<String, Integer> hash_map) {
         Map<String, Integer> sortedMap = hash_map.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue())
                 .collect(
-                        LinkedHashMap::new, // Supplier for the new map
-                        (map, entry) -> map.put(entry.getKey(), entry.getValue()), // Accumulator to add entries
-                        LinkedHashMap::putAll // Combiner to combine the maps
-                );
-        // System.out.println(sortedMap);
-        String keyWithHighestValue = sortedMap.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse(null);
+                        LinkedHashMap::new,
+                        (map, entry) -> map.put(entry.getKey(), entry.getValue()),
+                        LinkedHashMap::putAll);
+        return sortedMap;
+    }
 
-        // Print the key with the highest value
-        System.out
-                .println("Highest Percentage is " + sortedMap.get(keyWithHighestValue) + "% of " + keyWithHighestValue);
-        // int[] max_value = { 0 };
-        // String[] max_key = { null };
+    static void ranking(Map<String, Integer> hashMap) {
+        Map<String, Integer> sortedMap = sorted_map(hashMap);
+        int[] count = { sortedMap.size() / 10 };
+        sortedMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .forEach(element -> {
+                    System.out.println("Rank: " + count[0] + " " + element.getKey() + " " + element.getValue() + "%");
+                    count[0]++;
+                });
+    }
 
-        // map.entrySet().forEach(element -> {
-        // if (element.getValue() > max_value[0]) {
-        // max_value[0] = element.getValue();
-        // max_key[0] = element.getKey();
-        // }
-        // });
-        // System.out.println(
-        // "\nHighest Performing Student is " + max_key[0] + " having a percentage of "
-        // + max_value[0] + "%");
-        // return max_value[0];
+    static void highest_performing(Map<String, Integer> hash_map) {
+        String highestStudent = null;
+        int highestScore = Integer.MIN_VALUE;
+        System.out.println(sorted_map(hash_map));
+        for (Map.Entry<String, Integer> entry : hash_map.entrySet()) {
+            if (entry.getValue() > highestScore) {
+                highestScore = entry.getValue();
+                highestStudent = entry.getKey();
+            }
+        }
+
+        // Print the highest performing student
+        System.out.println(
+                "Highest Performing Student: " + highestStudent + " with a score of " + highestScore);
+    }
+
+    static void second_highest(Map<String, Integer> hash_map) {
+        String highestStudent = null;
+        int highestScore = Integer.MIN_VALUE;
+        String secondHighestStudent = null;
+        int secondHighestScore = Integer.MIN_VALUE;
+
+        for (Map.Entry<String, Integer> entry : hash_map.entrySet()) {
+            int score = entry.getValue();
+            if (score > highestScore) {
+                secondHighestScore = highestScore;
+                secondHighestStudent = highestStudent;
+                highestScore = score;
+                highestStudent = entry.getKey();
+            } else if (score > secondHighestScore) {
+                secondHighestScore = score;
+                secondHighestStudent = entry.getKey();
+            }
+        }
+
+        // Print the second highest performing student
+        System.out.println(
+                "Second Highest Performing Student: " + secondHighestStudent + " with a score of "
+                        + secondHighestScore);
+    }
+
+    static void improvements(Map<String, Integer> hash_map) {
+        hash_map.entrySet().stream().filter(element -> element.getValue() < 60).forEach(
+                element -> System.out.println("\nList of students need improvement are:- " + element.getKey() + " got "
+                        + element.getValue()));
+    }
+
+    static void Prashant_Rohan(Map<String, Integer> hash_map) {
+        hash_map.entrySet().stream().filter(element -> element.getKey() == "Prashant" || element.getKey() == "Rohan")
+                .forEach(element -> System.out.println("\n" + element.getKey() + " got " + element.getValue()));
     }
 
     // Hashcode and equals implementation
@@ -725,6 +768,17 @@ public class App {
 
         // create a method to Find the second-highest student by adding all
         // techStack(Subjects) marks/Assignments and finding percentages.
+        Result.second_highest(map);
+
+        // Create a method to find the overall ranking of students by Scores.
+        Result.ranking(map);
+
+        // Get all the Students who need improvements and scored less than 60%.
+        Result.improvements(map);
+
+        // Get all the Results of one Student named “Rohan/Prashant“ of all his
+        // Assignments and questions scores.
+        Result.Prashant_Rohan(map);
 
     }
 }
