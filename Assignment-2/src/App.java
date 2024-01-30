@@ -1,6 +1,10 @@
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Random;
 
 // Create Multiple classes
 
@@ -279,16 +283,16 @@ class TechStack {
 
 class Result {
     private int resultId;
-    private String student;
-    private String assignment;
-    private String trainer;
+    private Student student;
+    private Assignment assignment;
+    private Trainer trainer;
     private double score;
     private String feedback;
     private String submissionDate;
 
     // Constructor
-    public Result(int resultId, String student, String assignment, String trainer,
-            double score, String feedback, String submissionDate) {
+    public Result(int resultId, Student student, Assignment assignment, Trainer trainer, double score, String feedback,
+            String submissionDate) {
         this.resultId = resultId;
         this.student = student;
         this.assignment = assignment;
@@ -299,6 +303,7 @@ class Result {
     }
 
     // Getters and setters
+
     public int getResultId() {
         return resultId;
     }
@@ -307,27 +312,27 @@ class Result {
         this.resultId = resultId;
     }
 
-    public String getStudent() {
+    public Student getStudent() {
         return student;
     }
 
-    public void setStudent(String student) {
+    public void setStudent(Student student) {
         this.student = student;
     }
 
-    public String getAssignment() {
+    public Assignment getAssignment() {
         return assignment;
     }
 
-    public void setAssignment(String assignment) {
+    public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
     }
 
-    public String getTrainer() {
+    public Trainer getTrainer() {
         return trainer;
     }
 
-    public void setTrainer(String trainer) {
+    public void setTrainer(Trainer trainer) {
         this.trainer = trainer;
     }
 
@@ -353,6 +358,116 @@ class Result {
 
     public void setSubmissionDate(String submissionDate) {
         this.submissionDate = submissionDate;
+    }
+
+    public static List<Result> generateResults(List<Student> students, List<Trainer> trainers,
+            List<Assignment> assignments) {
+        List<Result> results = new ArrayList<>();
+        Random random = new Random();
+
+        for (Student student : students) {
+            Trainer trainer = trainers.get(random.nextInt(trainers.size()));
+            for (int i = 0; i < 4; i++) {
+                Assignment assignment = assignments.get(i);
+                double score = generateRandomScore();
+                String feedback = generateRandomFeedback();
+                String submissionDate = generateRandomSubmissionDate();
+                Result result = new Result(results.size() + 1, student, assignment, trainer, score, feedback,
+                        submissionDate);
+                results.add(result);
+            }
+        }
+
+        return results;
+    }
+
+    private static double generateRandomScore() {
+        return Math.random() * 100;
+    }
+
+    private static String generateRandomFeedback() {
+        return "Excellent work!";
+    }
+
+    private static String generateRandomSubmissionDate() {
+        return "01/05/2024";
+    }
+
+    static Map<String, Integer> getting_results(List<Result> results) {
+        int total_marks = 0;
+        int percentage = 0;
+        int count = 0;
+        List<String> name_stack = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+        for (Result result : results) {
+            String name = result.getStudent().getName();
+            String assign_title = result.getAssignment().getTitle();
+            String assign_desc = result.getAssignment().getDescription();
+            int assign_id = result.getAssignment().getAssignmentId();
+            int score = (int) result.getScore();
+
+            if (name_stack.contains(name)) {
+                total_marks += score;
+                count += 1;
+                System.out.println("\n" +
+                        "Assignment Title:- " + assign_title + "\nAssignment Description: " +
+                        assign_desc
+                        + "\nScore of the Assignment-" + assign_id + " is:- " + score + "\nTotal Score:- "
+                        + total_marks);
+                if (count == 4) {
+                    percentage = total_marks / 4;
+                    map.put(name, percentage);
+                    System.out.println("\nPercentage for the Assignments is:- " + percentage + "%");
+                    count = 0;
+                    total_marks = 0;
+                }
+
+            } else {
+                name_stack.add(name);
+                count += 1;
+                total_marks += score;
+                System.out.println("---------------------------");
+                System.out.println("Assignment List of " + name);
+                System.out.println("---------------------------");
+                System.out.println("Assignment Title:- " + assign_title + "\n Assignment Description: " + assign_desc
+                        + "\nScore of the Assignment-" + assign_id + " is:- " + score + "\nTotal Score:- "
+                        + total_marks);
+            }
+        }
+        return map;
+    }
+
+    static void highest_performing(Map<String, Integer> hash_map) {
+        Map<String, Integer> sortedMap = hash_map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(
+                        LinkedHashMap::new, // Supplier for the new map
+                        (map, entry) -> map.put(entry.getKey(), entry.getValue()), // Accumulator to add entries
+                        LinkedHashMap::putAll // Combiner to combine the maps
+                );
+        // System.out.println(sortedMap);
+        String keyWithHighestValue = sortedMap.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        // Print the key with the highest value
+        System.out
+                .println("Highest Percentage is " + sortedMap.get(keyWithHighestValue) + "% of " + keyWithHighestValue);
+        // int[] max_value = { 0 };
+        // String[] max_key = { null };
+
+        // map.entrySet().forEach(element -> {
+        // if (element.getValue() > max_value[0]) {
+        // max_value[0] = element.getValue();
+        // max_key[0] = element.getKey();
+        // }
+        // });
+        // System.out.println(
+        // "\nHighest Performing Student is " + max_key[0] + " having a percentage of "
+        // + max_value[0] + "%");
+        // return max_value[0];
     }
 
     // Hashcode and equals implementation
@@ -412,13 +527,13 @@ class ResultsData {
 class Question {
     private int questionId;
     private List<Answer> answers;
-    private int answerKey;
+    private String answerKey;
     private int scoreOfQuestion;
     private int techStackId;
     private int assignmentId;
 
     // Constructor
-    public Question(int questionId, List<Answer> answers, int answerKey, int scoreOfQuestion,
+    public Question(int questionId, List<Answer> answers, String answerKey, int scoreOfQuestion,
             int techStackId, int assignmentId) {
         this.questionId = questionId;
         this.answers = answers;
@@ -445,11 +560,11 @@ class Question {
         this.answers = answers;
     }
 
-    public int getAnswerKey() {
+    public String getAnswerKey() {
         return answerKey;
     }
 
-    public void setAnswerKey(int answerKey) {
+    public void setAnswerKey(String answerKey) {
         this.answerKey = answerKey;
     }
 
@@ -515,17 +630,18 @@ public class App {
 
         // Create 10 students Objects
         List<Student> student = new ArrayList<>();
-        student.add(new Student(1, "Sarah", "sarah@google.com", 1234567890L));
-        student.add(new Student(2, "Benjamin", "benjamin@google.com", 2345678901L));
-        student.add(new Student(3, "Samantha", "samantha@google.com", 3456789012L));
-        student.add(new Student(4, "William", "william@google.com", 4567890123L));
-        student.add(new Student(5, "Emma", "emma@google.com", 5678901234L));
-        student.add(new Student(6, "Jacob", "jacob@google.com", 6789012345L));
-        student.add(new Student(7, "Olivia", "olivia@google.com", 7890123456L));
-        student.add(new Student(8, "Ethan", "ethan@google.com", 8901234567L));
-        student.add(new Student(9, "Ava", "ava@google.com", 9012345678L));
-        student.add(new Student(10, "Noah", "noah@google.com", 1234567890L));
+        student.add(new Student(1, "Aakarshak", "aakarshak@google.com", 1234567890L));
+        student.add(new Student(2, "Vinit", "vinit@google.com", 2345678901L));
+        student.add(new Student(3, "Dwij", "dwij@google.com", 3456789012L));
+        student.add(new Student(4, "fenil", "fenil@google.com", 4567890123L));
+        student.add(new Student(5, "gopi", "gopi@google.com", 5678901234L));
+        student.add(new Student(6, "fidyan", "fidyan@google.com", 6789012345L));
+        student.add(new Student(7, "yash", "yash@google.com", 7890123456L));
+        student.add(new Student(8, "Rohan", "Rohan@google.com", 8901234567L));
+        student.add(new Student(9, "Prashant", "Prashant@google.com", 9012345678L));
+        student.add(new Student(10, "Kiran", "Kiran@google.com", 1234567890L));
 
+        // System.out.println(student.get(0).getStudentId());
         // Create 5 tech stacks
         // TechStack:
         // Properties: techStackId, name, description
@@ -537,18 +653,20 @@ public class App {
         techStack.add(new TechStack(5, "Spring", "Application development framework for Java"));
 
         // Create 3 trainers
-        List<Trainer> tariner = new ArrayList<>();
+        List<Trainer> trainer = new ArrayList<>();
         // Properties: trainerId, name, email, contactNumber, List<TechStack>
-        tariner.add(new Trainer(1, "Ritu", "ritu.s@brudite.com", 9023258962L, techStack));
-        tariner.add(new Trainer(2, "Krishna", "krishna.t@brudite.com", 9028238962L, techStack));
-        tariner.add(new Trainer(3, "Rishabh", "rishabh.t@brudite.com", 9229258962L, techStack));
+        trainer.add(new Trainer(1, "Ritu", "ritu.s@brudite.com", 9023258962L, techStack));
+        trainer.add(new Trainer(2, "Krishna", "krishna.t@brudite.com", 9028238962L, techStack));
+        trainer.add(new Trainer(3, "Rishabh", "rishabh.t@brudite.com", 9229258962L, techStack));
 
+        // Answers
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer(1, null));
-        answers.add(new Answer(2, null));
-        answers.add(new Answer(3, null));
-        answers.add(new Answer(4, null));
-        answers.add(new Answer(4, null));
+        answers.add(new Answer(1, "What is Python"));
+        answers.add(new Answer(2, "What is Java"));
+        answers.add(new Answer(3, "What is C++"));
+        answers.add(new Answer(4, "What is Django"));
+        answers.add(new Answer(5, "What is Spring"));
+        // System.out.println(answers.get(0));
 
         // Create 4 questions in each assignment
         List<Question> question = new ArrayList<>();
@@ -557,28 +675,28 @@ public class App {
         // techstackid,assignmentid
 
         // Questions for Assignment-1
-        question.add(new Question(1, null, 0, 10, 1, 1));
-        question.add(new Question(2, null, 0, 10, 2, 1));
-        question.add(new Question(3, null, 0, 10, 4, 1));
-        question.add(new Question(4, null, 0, 10, 5, 1));
+        question.add(new Question(1, answers, "General-purpose programming language", 10, 1, 1));
+        question.add(new Question(2, answers, "Object-oriented programming language", 10, 2, 1));
+        question.add(new Question(3, answers, "Web development framework for Python", 10, 4, 1));
+        question.add(new Question(4, answers, "Application development framework for Java", 10, 5, 1));
 
         // Questions for Assignment-2
-        question.add(new Question(1, null, 0, 10, 2, 2));
-        question.add(new Question(2, null, 0, 10, 1, 2));
-        question.add(new Question(3, null, 0, 10, 2, 2));
-        question.add(new Question(4, null, 0, 10, 4, 2));
+        question.add(new Question(1, answers, "Object-oriented programming language", 10, 2, 2));
+        question.add(new Question(2, answers, "General-purpose programming language", 10, 1, 2));
+        question.add(new Question(3, answers, "Application development framework for Java", 10, 5, 2));
+        question.add(new Question(4, answers, "Web development framework for Python", 10, 4, 2));
 
         // Questions for Assignment-3
-        question.add(new Question(1, null, 0, 10, 5, 3));
-        question.add(new Question(2, null, 0, 10, 3, 3));
-        question.add(new Question(3, null, 0, 10, 2, 3));
-        question.add(new Question(4, null, 0, 10, 1, 3));
+        question.add(new Question(1, answers, "Application development framework for Java", 10, 5, 3));
+        question.add(new Question(2, answers, "General-purpose programming language", 10, 3, 3));
+        question.add(new Question(3, answers, "Object-oriented programming language", 10, 2, 3));
+        question.add(new Question(4, answers, "General-purpose programming language", 10, 1, 3));
 
         // Questions for Assignment-4
-        question.add(new Question(1, null, 0, 10, 3, 4));
-        question.add(new Question(2, null, 0, 10, 4, 4));
-        question.add(new Question(3, null, 0, 10, 2, 4));
-        question.add(new Question(4, null, 0, 10, 3, 4));
+        question.add(new Question(1, answers, "General-purpose programming language", 10, 3, 4));
+        question.add(new Question(2, answers, "Web development framework for Python", 10, 4, 4));
+        question.add(new Question(3, answers, "Object-oriented programming language", 10, 2, 4));
+        question.add(new Question(4, answers, "General-purpose programming language", 10, 3, 4));
 
         // Create 4 Assignments
         List<Assignment> assignments = new ArrayList<>();
@@ -594,6 +712,19 @@ public class App {
         assignments.add(new Assignment(4, "Development Strategies",
                 "Understand different development strategies and methodologies", "1/02/2024",
                 question.subList(12, 15)));
+
+        // Result Geneartion
+        List<Result> results = Result.generateResults(student, trainer, assignments);
+
+        // Display the results
+        Map<String, Integer> map = Result.getting_results(results);
+
+        // create a method to Find the highest performing Student by adding all
+        // techStack(Subjects) marks and finding percentages.
+        Result.highest_performing(map);
+
+        // create a method to Find the second-highest student by adding all
+        // techStack(Subjects) marks/Assignments and finding percentages.
 
     }
 }
